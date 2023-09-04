@@ -5,8 +5,38 @@ _UNSET = -2
 
 
 class KnuthMorrisPratt:
+    """Structure based on the Knuth-Morris-Pratt algorithm for substring search.
+
+    This class will preprocess a string W of length M in O(M) time so that you can check
+    if its a substring of another string S of length N in O(N) time using `KnuthMorrisPratt(w).contained_by(s)`.
+
+    It does this by generating a structure of string W that allows you to "fallback" from a longer prefix of
+    W to a shorter prefix of W on a character mismatch when searching S. The code here
+    is based on descriptions at https://www.charliemistrata.com/posts/knuth-morris-pratt.
+
+    >>> KnuthMorrisPratt("bababooie")
+    KnuthMorrisPratt(string='bababooie', calculated fallback structure=[-1, 0, 0, 1, 2, 3, 0, 0, 0])
+    # prefix_fallback[0] = -1 # "" has no suffix
+    # prefix_fallback[1] = 0 # "b" -> ""
+    # prefix_fallback[2] = 0 # "ba" -> ""
+    # prefix_fallback[3] = 1 # "bab" -> "b"
+    # prefix_fallback[4] = 2 # "baba" -> "ba"
+    # prefix_fallback[5] = 3 # "babab" -> "bab"
+    # prefix_fallback[6] = 0 # "bababa" -> ""
+    # ...
+
+    >>> baba = KnuthMorrisPratt("baba")
+    >>> baba.contained_by("ababab")
+    True
+    >>> baba.contained_by("keke")
+    False
+    """
+
     def __init__(self, w: str):
         self.string = w
+        if w == "":
+            self._fallback_length_by_prefix_length = []
+            return
         # List matching each prefix p1 to the next longest prefix/fallback p2 that is
         # a suffix of p1, using the prefix lengths as keys.
         # Using a special variable '_UNSET' is not necessary but is done here
@@ -41,6 +71,8 @@ class KnuthMorrisPratt:
 
     def contained_by(self, s: str) -> bool:
         """Check if `self.string` is a substring of superstring `s`."""
+        if self.string == "":
+            return True
         current_matched_prefix_length = 0
         for superstring_char in s:
             current_matched_prefix_length = self._move_forward_from_prefix(

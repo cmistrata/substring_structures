@@ -17,3 +17,6 @@ classifiers = [
 
 [project.urls]
 "Homepage" = "https://github.com/cmistrata/substring_structures"
+
+[tool.pytest.ini_options]
+addopts = ["--import-mode=importlib"]
