@@ -57,7 +57,7 @@ class STBranchPoint:
     branch_distance: int
 
 
-class SuffixTree:
+class UkkonensSuffixTree:
     def __init__(self, string: str):
         # By appending a '🍁' to the end of the string, we ensure we will
         # pay our branch debt at the end of creating the suffix tree, as we

@@ -22,11 +22,12 @@ class AhoCorasick:
             raise ValueError(
                 f"'`strings` should be a collection of strings but was passed a single string '{strings}'."
             )
-        self.root = ACNode()
+        self.strings = strings
+        self._root = ACNode()
         if "" in strings:
-            self.root.value = ""
+            self._root.value = ""
 
-        current_nodes_by_string = {string: self.root for string in strings}
+        current_nodes_by_string = {string: self._root for string in strings}
 
         current_char_index = 0
         while any(current_nodes_by_string):
@@ -71,16 +72,16 @@ class AhoCorasick:
 
         # We have failed every recursive check, landing at the 'None'
         # suffix link of the root node.
-        return self.root
+        return self._root
 
     def find_substrings_in_superstring(self, superstring: str):
         found_substrings = set()
-        if self.root.value is not None:
+        if self._root.value is not None:
             found_substrings.add("")
 
-        current_nodes = {self.root}
+        current_nodes = {self._root}
         for char in superstring:
-            next_nodes = {self.root}
+            next_nodes = {self._root}
             for node in current_nodes:
                 next_node = self._move_forward_from_node(node, char)
                 if next_node.value is not None:
@@ -89,3 +90,9 @@ class AhoCorasick:
             current_nodes = next_nodes
 
         return found_substrings
+
+    def __str__(self) -> str:
+        return f"AhoCorasick(strings={self.strings})"
+
+    def __repr__(self) -> str:
+        return self.__str__()
