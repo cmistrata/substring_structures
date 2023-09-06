@@ -13,11 +13,11 @@ class _ACNode:
 
 class AhoCorasick:
     """
-    Structure used to check a known set of strings is contained in an arbitrary superstring.
+    Structure used to preprocess a set of substrings to efficiently do substring checks.
 
     Based on the Aho-Corasick algorithm (https://en.wikipedia.org/wiki/Aho%E2%80%93Corasick_algorithm),
-    this structure can be computed in O(N) time for a set of strings "SubstringsSet" of total length N. It can
-    then be used to efficiently check which strings in "SubstringsSet" are in a larger string "superstring"
+    this structure can be computed in O(N) time for a set of strings `strings` of total character count N. It can
+    then be used to efficiently check which strings in `strings` are in an arbitrary larger string `superstring`
     using the `find_substrings_in_superstring(superstring)` method.
     """
 
