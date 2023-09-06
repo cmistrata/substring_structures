@@ -13,6 +13,7 @@ from substring_structures import AhoCorasick
         ({"b", "ba", "aba"}, "abab", {"b", "ba", "aba"}),
         ({"b", "ba", "aba", "baba"}, "abab", {"b", "ba", "aba"}),
         ({"b", "ba", "aba", "baba"}, "abab", {"b", "ba", "aba"}),
+        ({"baba", "ab"}, "babad", {"baba", "ab"}),
     ],
 )
 def test_find_substrings_in_superstring(
