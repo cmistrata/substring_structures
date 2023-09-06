@@ -1,15 +1,19 @@
+"""Implementation of the Aho–Corasick algorithm and underlying structure."""
+
+
 from typing import Collection
 
 
-class ACNode:
+class _ACNode:
     def __init__(self, value: str | None = None):
         self.value = value
-        self.children: dict[str, ACNode] = {}
-        self.suffix_link: ACNode | None = None
+        self.children: dict[str, _ACNode] = {}
+        self.suffix_link: _ACNode | None = None
 
 
 class AhoCorasick:
-    """Structure used to check a known set of strings is contained in an arbitrary superstring.
+    """
+    Structure used to check a known set of strings is contained in an arbitrary superstring.
 
     Based on the Aho-Corasick algorithm (https://en.wikipedia.org/wiki/Aho%E2%80%93Corasick_algorithm),
     this structure can be computed in O(N) time for a set of strings "SubstringsSet" of total length N. It can
@@ -23,7 +27,7 @@ class AhoCorasick:
                 f"'`strings` should be a collection of strings but was passed a single string '{strings}'."
             )
         self.strings = strings
-        self._root = ACNode()
+        self._root = _ACNode()
         if "" in strings:
             self._root.value = ""
 
@@ -41,9 +45,9 @@ class AhoCorasick:
 
                 # Add a new child node if it does not already exist.
                 if current_char not in current_node.children:
-                    child_node = ACNode()
+                    child_node = _ACNode()
                     current_node.children[current_char] = child_node
-                    child_node.suffix_link = self._move_forward_from_node(
+                    child_node.suffix_link, _ = self._move_forward_from_node(
                         node=current_node.suffix_link,
                         char=current_char,
                     )
@@ -64,30 +68,45 @@ class AhoCorasick:
                 current_nodes_by_string.pop(string_shorter_than_current_char_index)
             current_char_index += 1
 
-    def _move_forward_from_node(self, node: ACNode | None, char: str):
+    def _move_forward_from_node(
+        self, node: _ACNode | None, char: str
+    ) -> tuple[_ACNode, set[str]]:
+        """
+        Move forward from node using char, traveling along suffix links where necessary.
+        Return a tuple of the node we arrive at, as well the values of any nodes we traveled along
+        on the way via suffix links for use during substring search.
+        """
+        traversed_substrings = set()
+
         while node != None:
+            if node.value is not None:
+                traversed_substrings.add(node.value)
+
             if char in node.children:
-                return node.children[char]
+                return node.children[char], traversed_substrings
             node = node.suffix_link
 
         # We have failed every recursive check, landing at the 'None'
         # suffix link of the root node.
-        return self._root
+        return self._root, traversed_substrings
 
-    def find_substrings_in_superstring(self, superstring: str):
+    def find_substrings_in_superstring(self, superstring: str) -> set[str]:
+        """Find which of `self.strings` occurs in `superstring`."""
+        # Add a terminating character to the superstring we don't expect to be in any of the substrings.
+        # This way, when we try to match this character, we will be forced to travel along suffix links to the roots,
+        # as traveling along nodes is how we find and add found substrings.
+        superstring += "🍁"
+
         found_substrings = set()
         if self._root.value is not None:
             found_substrings.add("")
 
-        current_nodes = {self._root}
+        current_node = self._root
         for char in superstring:
-            next_nodes = {self._root}
-            for node in current_nodes:
-                next_node = self._move_forward_from_node(node, char)
-                if next_node.value is not None:
-                    found_substrings.add(next_node.value)
-                next_nodes.add(next_node)
-            current_nodes = next_nodes
+            current_node, traversed_substrings = self._move_forward_from_node(
+                current_node, char
+            )
+            found_substrings |= traversed_substrings
 
         return found_substrings
 

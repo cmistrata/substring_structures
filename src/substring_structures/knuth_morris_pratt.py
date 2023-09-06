@@ -5,7 +5,8 @@ _UNSET = -2
 
 
 class KnuthMorrisPratt:
-    """Structure based on the Knuth-Morris-Pratt algorithm for substring search.
+    """
+    Structure based on the Knuth-Morris-Pratt algorithm for substring search.
 
     This class will preprocess a string W of length M in O(M) time so that you can check
     if its a substring of another string S of length N in O(N) time using `KnuthMorrisPratt(w).contained_by(s)`.
