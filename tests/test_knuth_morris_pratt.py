@@ -1,6 +1,6 @@
 import pytest
 
-from substring_structures import KnuthMorrisPratt
+from substring_structures import KMPPrefixFallbackStructure
 
 
 @pytest.mark.parametrize(
@@ -22,6 +22,6 @@ from substring_structures import KnuthMorrisPratt
 )
 def test_contained_by(substring: str, superstring: str, substring_in_superstring: bool):
     assert (
-        KnuthMorrisPratt(substring).contained_by(superstring)
+        KMPPrefixFallbackStructure(substring).contained_by(superstring)
         == substring_in_superstring
     )

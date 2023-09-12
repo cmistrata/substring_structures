@@ -1,6 +1,6 @@
 import pytest
 
-from substring_structures import ACStringFSM
+from substring_structures import SuffixTree
 
 
 @pytest.mark.parametrize(
@@ -20,7 +20,8 @@ def test_find_substrings_in_superstring(
     superstring: str,
     expected_substrings_in_superstring: set[str],
 ):
-    assert (
-        ACStringFSM(substrings).find_substrings_in_superstring(superstring)
-        == expected_substrings_in_superstring
-    )
+    suffix_tree = SuffixTree(superstring)
+    actual_found_substrings = {
+        substring for substring in substrings if substring in suffix_tree
+    }
+    assert actual_found_substrings == expected_substrings_in_superstring
